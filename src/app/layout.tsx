@@ -1,3 +1,4 @@
+import "@/lib/storage-polyfill";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -24,18 +25,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Polyfill localStorage for SSR to prevent localStorage.getItem errors
-  if (typeof window === 'undefined') {
-    global.localStorage = {
-      getItem: () => null,
-      setItem: () => {},
-      removeItem: () => {},
-      clear: () => {},
-      key: () => null,
-      length: 0
-    } as Storage;
-  }
-
   return (
     <html lang="en">
       <body
