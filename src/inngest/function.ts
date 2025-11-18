@@ -61,13 +61,13 @@ export const codeAgentFunction = inngest.createFunction(
       tools: [
         // terminal tool to run commands
         createTool({
-          name: "terminal",
+          name: "run_terminal_command",
           description: "Use the terminal to run commands",
           parameters: z.object({
             command: z.string(),
           }),
           handler: async ({ command }, { step }) => {
-            return await step?.run("terminal", async () => {
+            return await step?.run("run_terminal_command", async () => {
               const buffers = { stdout: "", stderr: "" };
 
               // check if the commands succeeded
@@ -96,7 +96,7 @@ export const codeAgentFunction = inngest.createFunction(
 
         // create or update files tool
         createTool({
-          name: "createOrUpdateFiles",
+          name: "create_or_update_files",
           description: "Create or update files in the sandbox",
           parameters: z.object({
             files: z.array(
@@ -111,7 +111,7 @@ export const codeAgentFunction = inngest.createFunction(
             { step, network }: Tool.Options<AgentState>
           ) => {
             const newFiles = await step?.run(
-              "createOrUpdateFiles",
+              "create_or_update_files",
               async () => {
                 // update the files and keep track of them
                 try {
@@ -138,13 +138,13 @@ export const codeAgentFunction = inngest.createFunction(
 
         // read files tool
         createTool({
-          name: "readFiles",
+          name: "read_files",
           description: "Read files from the sandbox",
           parameters: z.object({
             files: z.array(z.string()),
           }),
           handler: async ({ files }, { step }) => {
-            return await step?.run("readFiles", async () => {
+            return await step?.run("read_files", async () => {
               // read the files and return them
               try {
                 const sandbox = await getSandbox(sandboxId);
