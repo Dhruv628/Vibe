@@ -5,8 +5,6 @@ import {
   createTool,
   createNetwork,
   type Tool,
-  gemini,
-  openai
 } from "@inngest/agent-kit";
 
 import { inngest } from "./client";
@@ -14,10 +12,12 @@ import {
   getSandbox,
   lastAssistantTextMessageContent,
 } from "./utils";
-import { PROMPT } from "@/constants";
+import { prisma } from "@/lib/database";
+import { MessageRole, MessageType } from "@/generated/prisma/enums";
+import { OPENAI_MODEL_CONFIG, PROMPT } from "@/constants";
 
 
-interface AgentState {
+type AgentState ={
   summary: string;
   files: { [path: string]: string };
 }
@@ -38,26 +38,7 @@ export const codeAgentFunction = inngest.createFunction(
       name: "code-agent",
       description: "An expert coding agent",
       system: PROMPT,
-      // * OpenAi model 
-      // model: openai({
-      //   model: "o3-mini",
-      //   // defaultParameters:{
-      //   //   temperature: 0.1,
-      //   // }
-      // }),
-      // * Gemini model 
-      model: gemini({
-        model: "gemini-2.5-pro", // Latest model with better reasoning
-        apiKey: process.env.GOOGLE_API_KEY,
-        defaultParameters: {
-          generationConfig: {
-            temperature: 0.1, // Low for consistent code generation
-            // topP: 0.8,         // Focus on high probability tokens
-            // topK: 40,          // Limit vocabulary for better consistency
-            // maxOutputTokens: 8192, // Higher limit for long code
-          },
-        },
-      }),
+      model: OPENAI_MODEL_CONFIG.model,
       tools: [
         // terminal tool to run commands
         createTool({
@@ -93,7 +74,6 @@ export const codeAgentFunction = inngest.createFunction(
             });
           },
         }),
-
         // create or update files tool
         createTool({
           name: "create_or_update_files",
@@ -135,7 +115,6 @@ export const codeAgentFunction = inngest.createFunction(
             }
           },
         }),
-
         // read files tool
         createTool({
           name: "read_files",
@@ -199,18 +178,52 @@ export const codeAgentFunction = inngest.createFunction(
 
     const result = await network.run(event.data.value);
     
+    const summary = result.state.data.summary;
+    const files = result.state.data.files;
+    const title = "Fragment";
+
+    const isError = !summary || Object.keys(files || {}).length == 0; 
+
     // Get the sandbox URL
     const sandboxUrl = await step.run("get-sandbox-url", async () => {
       const sandbox = await getSandbox(sandboxId);
       const host = sandbox.getHost(3000);
       return `https://${host}`;
     });
+
+    // Save result to DB
+    await step.run("save-result", async () =>{
+      if(isError){
+        return await prisma.message.create({
+          data: {
+            content: "Error: Unable to generate summary or files.",
+            role: MessageRole.ASSISTANT,
+            type: MessageType.ERROR
+          }
+        })
+      }
+
+      return await prisma.message.create({
+        data :{
+          content: summary,
+          role: MessageRole.ASSISTANT,
+          type: MessageType.RESULT,
+          fragment : {
+            create: {
+              sandboxUrl,
+              title,
+              files
+            }
+          }
+        },
+      })
+    })
     
     return {
       url: sandboxUrl,
-      title: "Fragment",
-      files: result.state.data.files,
-      summary: result.state.data.summary,
+      title,
+      files,
+      summary,
     };
   }
 );
