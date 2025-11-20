@@ -196,15 +196,16 @@ export const codeAgentFunction = inngest.createFunction(
       if(isError){
         return await prisma.message.create({
           data: {
+            projectId: event.data.projectId,
             content: "Error: Unable to generate summary or files.",
             role: MessageRole.ASSISTANT,
             type: MessageType.ERROR
           }
         })
       }
-
       return await prisma.message.create({
         data :{
+          projectId: event.data.projectId,
           content: summary,
           role: MessageRole.ASSISTANT,
           type: MessageType.RESULT,

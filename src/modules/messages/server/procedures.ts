@@ -1,3 +1,4 @@
+import { MessageRole, MessageType } from "@/generated/prisma/enums";
 import { inngest } from "@/inngest/client";
 import { prisma } from "@/lib/database";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
@@ -13,15 +14,19 @@ export const messageRouter = createTRPCRouter({
     create: baseProcedure
     .input(
         z.object({
-            value: z.string().min(1, {message: "message is required"}),
+            value: z.string()
+            .min(1, {message: "value is required"})
+            .max(10000, {message: "value is too long"}),
+            projectId: z.string().min(1, {message: "projectId is required"})
         })
     )
     .mutation( async ({ input }) => {
         const createdMessage = await prisma.message.create({
             data:{
+                projectId: input.projectId,
                 content: input.value,
-                role: "USER",
-                type: "RESULT",
+                role: MessageRole.USER,
+                type: MessageType.RESULT,
             }
         })
 
@@ -29,6 +34,7 @@ export const messageRouter = createTRPCRouter({
           name: 'code-agent/run',
           data: {
             value: input.value,
+            projectId: input.projectId,
           },
         })
         
