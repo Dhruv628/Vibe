@@ -4,13 +4,13 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { MessagesContainer } from "./components/messages-container";
 import { Suspense, useState } from "react";
 import { Fragment } from "@/generated/prisma/client";
-import ProjectHeader from "./components/project-header";
-import FragmentWeb from "./components/fragment-web";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CodeIcon, CrownIcon, EyeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FileExplorer } from "@/components/file-explorer";
+import ProjectHeader from "./components/project-header";
+import { FragmentWeb } from "./components/fragment-web";
 
 type Props = {
     projectId : string,
@@ -31,7 +31,7 @@ export const ProjectView = ( { projectId } : Props ) => {
                         <MessagesContainer projectId={projectId} activeFragment={activeFragment} setActiveFragment={setActiveFragment} />
                     </Suspense>
                 </ResizablePanel>
-                <ResizableHandle withHandle/>
+                <ResizableHandle className="hover:bg-primary transition-colors"/>
                 <ResizablePanel defaultSize={65} minSize={50}>
                     <Tabs
                       className="h-full gap-y-0"
@@ -55,13 +55,13 @@ export const ProjectView = ( { projectId } : Props ) => {
                                     </Link>
                                 </Button>
                             </div>
-                            <TabsContent value="code" className="min-h-0">
-                                {!!activeFragment && <FileExplorer files={activeFragment.files as { [path: string]: string} } />}
-                            </TabsContent>
-                            <TabsContent value="preview">
-                                {!!activeFragment && <FragmentWeb fragment={activeFragment} />}
-                            </TabsContent>
                         </div>
+                        <TabsContent value="code" className="min-h-0">
+                            {!!activeFragment && <FileExplorer files={activeFragment.files as { [path: string]: string} } />}
+                        </TabsContent>
+                        <TabsContent value="preview">
+                            {!!activeFragment && <FragmentWeb fragment={activeFragment} />}
+                        </TabsContent>
                     </Tabs>
                 </ResizablePanel>
             </ResizablePanelGroup>
