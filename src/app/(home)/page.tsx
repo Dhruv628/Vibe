@@ -24,7 +24,6 @@ const Page=()=>{
         </p>
         <div className="max-w-3xl mx-auto w-full">
           <ProjectForm />
-          
         </div>
       </section>
       <ProjectsList />

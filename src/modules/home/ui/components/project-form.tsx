@@ -16,14 +16,11 @@ import { useRouter } from "next/navigation"
 import { PROJECT_TEMPLATES } from "@/constants"
 import { useClerk } from "@clerk/nextjs"
 
-
 const formSchema = z.object({
     value: z.string()
         .min(1,{message:"Value is required"})
         .max(10000,{message:"Value is too long"}) 
 })
-
-
 
 export const ProjectForm = () =>{
     const router = useRouter()
