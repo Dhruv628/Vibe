@@ -2,5 +2,6 @@
     "cSpell.words": [
         "dadde",
         "inngest"
-    ]
+    ],
+    "prisma.pinToPrisma6": true
 }

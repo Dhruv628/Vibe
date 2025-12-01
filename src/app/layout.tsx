@@ -28,19 +28,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning={true}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ClerkProvider>
-            <TRPCReactProvider>
+    <ClerkProvider>
+      <TRPCReactProvider>
+        <html lang="en" suppressHydrationWarning={true}>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
               <ThemeProvider attribute={"class"} defaultTheme="system" enableSystem disableTransitionOnChange>
                 <Toaster/>
                 {children}
               </ThemeProvider>
-            </TRPCReactProvider>
-        </ClerkProvider>
-      </body>
-    </html>
+          </body>
+        </html>
+      </TRPCReactProvider>
+    </ClerkProvider>
   );
 }
