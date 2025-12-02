@@ -5,16 +5,19 @@ import {
   createTool,
   createNetwork,
   type Tool,
+  Message,
+  createState,
 } from "@inngest/agent-kit";
 
 import { inngest } from "./client";
 import {
   getSandbox,
   lastAssistantTextMessageContent,
+  parseAgentOutput,
 } from "./utils";
 import { prisma } from "@/lib/database";
 import { MessageRole, MessageType } from "@/generated/prisma/enums";
-import { OPENAI_MODEL_CONFIG, PROMPT } from "@/constants";
+import { FRAGMENT_TITLE_PROMPT, OPENAI_MODEL_CONFIG, PROMPT, RESPONSE_PROMPT } from "@/constants";
 
 
 type AgentState ={
@@ -31,7 +34,41 @@ export const codeAgentFunction = inngest.createFunction(
       const sandbox = await Sandbox.create("vibe-nextjs-try-3");
       return sandbox.sandboxId;
     });
-    
+
+		const previousMessages = await step.run(
+			"get-previous-messages",
+			async () => {
+				const formattedMessages: Message[] = [];
+				const messages = await prisma.message.findMany({
+					where: {
+						projectId: event.data.projectId,
+					},
+					orderBy: {
+						createdAt: "desc",
+					},
+					take: 5
+				});
+				for (const message of messages) {
+					formattedMessages.push({
+						type: "text",
+						role: message.role === MessageRole.ASSISTANT ? "assistant" : "user",
+						content: message.content,
+					});
+				}
+				return formattedMessages;
+			} 
+		);
+
+		const state = createState<AgentState>(
+			{
+				summary: "",
+				files: {},
+			},
+			{
+				messages: previousMessages,
+			}
+		);
+  
 
     // Create an agent with different tools
     const codeAgent = createAgent<AgentState>({
@@ -161,26 +198,39 @@ export const codeAgentFunction = inngest.createFunction(
     });
 
     // Create a network
-    const network = createNetwork<AgentState>({
-      name: "coding-agent-network",
-      agents: [codeAgent],
-      maxIter: 10, // maximum number of iterations
-      router: async ({ network }) => {
-        const summary = network.state.data.summary;
+		const network = createNetwork<AgentState>({
+			name: "coding-agent-network",
+			agents: [codeAgent],
+			defaultState: state,
+			maxIter: 10,
+			router: async ({ network }) =>
+				network.state.data.summary ? undefined : codeAgent,
+		});
 
-        if (summary) {
-          return;
-        }
-
-        return codeAgent;
-      },
-    });
-
-    const result = await network.run(event.data.value);
-    
-    const summary = result.state.data.summary;
+    const result = await network.run(event.data.value, { state });
     const files = result.state.data.files;
-    const title = "Fragment";
+
+    // Fragment title generate
+		const fragmentTitleGenerator = createAgent<AgentState>({
+			name: "fragment-title",
+			system: FRAGMENT_TITLE_PROMPT,
+			model: OPENAI_MODEL_CONFIG.model,
+		});
+
+    
+    // Response generate
+		const responseGenerator = createAgent<AgentState>({
+			name: "response-generator",
+			system: RESPONSE_PROMPT,
+			model: OPENAI_MODEL_CONFIG.model
+		});
+
+		const { output: responseTitle } = await fragmentTitleGenerator.run(result.state.data.summary);
+		const { output: responseSummary } = await responseGenerator.run(result.state.data.summary);
+
+    const title = parseAgentOutput(responseTitle)
+    const summary = parseAgentOutput(responseSummary)
+
 
     const isError = !summary || Object.keys(files || {}).length == 0; 
 
