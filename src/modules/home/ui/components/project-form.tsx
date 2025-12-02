@@ -41,9 +41,9 @@ export const ProjectForm = () =>{
             queryClient.invalidateQueries(
                 trpc.projects.getMany.queryOptions()
             );
-            // queryClient.invalidateQueries(
-            //     trpc.usage.status.queryOptions()
-            // )
+            queryClient.invalidateQueries(
+                trpc.usage.status.queryOptions()
+            )
             router.push(`/projects/${data.id}`);
             
         },
