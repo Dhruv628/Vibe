@@ -92,7 +92,7 @@ We welcome contributions to improve **Vibe Craft**! To contribute, follow these 
 2. **Clone Your Fork**:
   Clone your forked repository to your local machine:
   ```bash
-  git clone https://github.com/YousiefSameh/Vibe.git
+  git clone https://github.com/Dhruv628/Vibe.git
   cd Vibe
   ```
 
