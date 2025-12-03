@@ -14,13 +14,14 @@ import {
 interface Props {
   children: ReactNode;
   onReset?: () => void;
+  variant?: "default" | "minimal";
 }
 
 /**
  * Specialized ErrorBoundary for React Query/tRPC errors
  * Handles network errors, authentication errors, and data fetching failures
  */
-export function QueryErrorBoundary({ children, onReset }: Props) {
+export function QueryErrorBoundary({ children, onReset, variant = "default" }: Props) {
   return (
     <BaseErrorBoundary
       context={{ type: "query" }}
@@ -29,6 +30,23 @@ export function QueryErrorBoundary({ children, onReset }: Props) {
         const errorType = classifyError(error);
         const errorMessage = getErrorMessage(error, errorType);
         const canRetry = isRetryableError(errorType);
+
+        if (variant === "minimal") {
+            return (
+                <div className="flex items-center justify-between p-2 border-b h-[52px] w-full bg-destructive/5 text-destructive px-4">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                         <AlertCircle className="h-4 w-4" />
+                         <span>Error loading project</span>
+                    </div>
+                    {canRetry && (
+                        <Button onClick={reset} variant="ghost" size="sm" className="h-7 px-2 text-destructive hover:text-destructive hover:bg-destructive/10">
+                            <RefreshCw className="h-3 w-3 mr-1" />
+                            Retry
+                        </Button>
+                    )}
+                </div>
+            )
+        }
 
         return (
           <div className="flex items-center justify-center min-h-[300px] p-6">
