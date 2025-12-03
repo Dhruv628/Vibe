@@ -17,7 +17,8 @@ import {
 } from "./utils";
 import { prisma } from "@/lib/database";
 import { MessageRole, MessageType } from "@/generated/prisma/enums";
-import { FRAGMENT_TITLE_PROMPT, OPENAI_MODEL_CONFIG, PROMPT, RESPONSE_PROMPT, SANDBOX_TIMEOUT } from "@/constants";
+import { FRAGMENT_TITLE_PROMPT, RESPONSE_PROMPT, SANDBOX_TIMEOUT } from "@/constants";
+import { OPENAI_MODEL_CONFIG, PROMPT } from "@/constants/server";
 
 
 type AgentState ={

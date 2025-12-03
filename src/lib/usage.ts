@@ -1,4 +1,3 @@
-import { RateLimiterPrisma } from "rate-limiter-flexible"
 import { prisma } from "./database";
 import { auth } from "@clerk/nextjs/server";
 
@@ -20,7 +19,25 @@ const DURATION = 30 * 24 * 60 * 60; // 30 days
 /**
  * Cost in credits for each generation request.
  */
-const GENERATION_COST = 1
+const GENERATION_COST = 1;
+
+/**
+ * Lazily loads RateLimiterPrisma on the server only.
+ *
+ * @remarks
+ * This avoids bundling `rate-limiter-flexible` types into Next.js client/RSC builds,
+ * which can cause `.d.ts` parse errors in some setups. [web:5][web:23]
+ */
+function getRateLimiterPrisma() {
+  if (typeof window !== "undefined") {
+    throw new Error("RateLimiterPrisma must only be used on the server");
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { RateLimiterPrisma } = require("rate-limiter-flexible") as typeof import("rate-limiter-flexible");
+
+  return RateLimiterPrisma;
+}
 
 /**
  * Creates and returns a rate limiter instance for tracking user usage.
@@ -29,23 +46,27 @@ const GENERATION_COST = 1
  * Uses Prisma as the storage backend with a 30-day duration window.
  *
  * @returns A configured rate limiter instance
+ *
+ * @throws When the user is not authenticated
  */
-export async function getUsageTracker () {
-    const { has } = await auth();
+export async function getUsageTracker() {
+  const { has } = await auth();
 
-    if(!has){
-        throw new Error("User not authenticated")
-    }
-    const hasProAccess = has({ plan : "pro" })
+  if (!has) {
+    throw new Error("User not authenticated");
+  }
 
-    const usageTracker = new RateLimiterPrisma({
-        storeClient: prisma,
-        tableName: "Usage",
-        points: hasProAccess ? PRO_POINTS : FREE_POINTS,
-        duration: DURATION,
-    });
-    
-    return usageTracker;
+  const hasProAccess = has({ plan: "pro" });
+  const RateLimiterPrisma = getRateLimiterPrisma();
+
+  const usageTracker = new RateLimiterPrisma({
+    storeClient: prisma,
+    tableName: "Usage",
+    points: hasProAccess ? PRO_POINTS : FREE_POINTS,
+    duration: DURATION,
+  });
+
+  return usageTracker;
 }
 
 /**
@@ -59,18 +80,17 @@ export async function getUsageTracker () {
  * @throws When the user is not authenticated
  * @throws When the user has exceeded their rate limit
  */
-export async function consumeCredits () {
-    const { userId } = await auth();
+export async function consumeCredits() {
+  const { userId } = await auth();
 
-    if(!userId) {
-        throw new Error("User not authenticated")
-    }
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
 
-    const usageTracker = await getUsageTracker();
+  const usageTracker = await getUsageTracker();
+  const result = await usageTracker.consume(userId, GENERATION_COST);
 
-    const result = await usageTracker.consume(userId, GENERATION_COST);
-
-    return result;
+  return result;
 }
 
 /**
@@ -83,16 +103,15 @@ export async function consumeCredits () {
  *
  * @throws When the user is not authenticated
  */
-export async function getUsageStatus () {
-    const { userId } = await auth();
+export async function getUsageStatus() {
+  const { userId } = await auth();
 
-    if(!userId) {
-        throw new Error("User not authenticated")
-    }
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
 
-    const usageTracker = await getUsageTracker();
-    
-    const result = await usageTracker.get(userId);
+  const usageTracker = await getUsageTracker();
+  const result = await usageTracker.get(userId);
 
-    return result;
+  return result;
 }

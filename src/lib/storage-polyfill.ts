@@ -20,6 +20,8 @@ if (typeof window === 'undefined') {
   };
 
   // Polyfill for Node.js/server environments
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).localStorage = mockStorage;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).sessionStorage = mockStorage;
 }

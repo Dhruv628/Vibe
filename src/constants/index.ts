@@ -1,15 +1,6 @@
-import { openai } from "@inngest/agent-kit";
-
-export const OPENAI_MODEL_CONFIG =  {
-  model: openai({
-    model: "o3-mini",
-    // defaultParameters:{
-    //   temperature: 0.1,
-    // }
-  }),
-}
-
 export const SANDBOX_TIMEOUT = 30_000 * 10 * 2 // sandbox alive for 15 mins
+
+// Server-only constants like PROMPT and OPENAI_MODEL_CONFIG are in ./server.ts
 
 export const PROMPT = `
 You are a senior software engineer working in a sandboxed Next.js 15.3.3 environment.

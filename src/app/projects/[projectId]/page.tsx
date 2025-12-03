@@ -11,7 +11,7 @@ type Props = {
     }>
 }
 
-export const page = async ({ params } : Props) => {
+export default async function Page({ params } : Props) {
     const { projectId } = await params;
     const queryClient = getQueryClient();
     
@@ -32,5 +32,3 @@ export const page = async ({ params } : Props) => {
         </HydrationBoundary>
     )
 }
-
-export default page;
