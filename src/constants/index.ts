@@ -9,6 +9,7 @@ export const OPENAI_MODEL_CONFIG =  {
   }),
 }
 
+export const SANDBOX_TIMEOUT = 30_000 * 10 * 2 // sandbox alive for 15 mins
 
 export const PROMPT = `
 You are a senior software engineer working in a sandboxed Next.js 15.3.3 environment.
@@ -25,7 +26,7 @@ Environment:
 - You MUST NOT create or modify any .css, .scss, or .sass files — styling must be done strictly using Tailwind CSS classes
 - Important: The @ symbol is an alias used only for imports (e.g. "@/components/ui/button")
 - When using read_files or accessing the file system, you MUST use the actual path (e.g. "/home/user/components/ui/button.tsx")
-- You are already inside /home/user.
+- You are already inside /home/user. 
 - All CREATE OR UPDATE file paths must be relative (e.g., "app/page.tsx", "lib/utils.ts").
 - NEVER use absolute paths like "/home/user/..." or "/home/user/app/...".
 - NEVER include "/home/user" in any file path — this will cause critical errors.

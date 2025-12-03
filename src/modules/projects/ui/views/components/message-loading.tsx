@@ -1,3 +1,4 @@
+import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
@@ -41,6 +42,17 @@ export const MessageLoading = () => {
         </div>
         <div className='pl-8.5 flex flex-col gap-y-4'>
             <ShimmerMessages />
+        </div>
+        {/* Message skeleton loader */}
+        <div className="flex flex-col gap-2 mt-2">
+          <div className="pl-7 space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-4/5" />
+          </div>
+          <div className="pl-7 mt-2">
+              <Skeleton className="h-16 w-36" />
+          </div>
         </div>
     </div>
   )

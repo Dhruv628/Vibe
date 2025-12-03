@@ -1,8 +1,10 @@
+import { SANDBOX_TIMEOUT } from "@/constants";
 import { Sandbox } from "@e2b/code-interpreter";
 import { AgentResult, Message, TextMessage } from "@inngest/agent-kit";
 
 export async function getSandbox(sandboxId: string) {
     const sandbox = await Sandbox.connect(sandboxId);
+    await sandbox.setTimeout(SANDBOX_TIMEOUT) // sandbox alive for 15 mins
     return sandbox;
 }
 
@@ -23,15 +25,15 @@ export function lastAssistantTextMessageContent(result: AgentResult) {
 };
 
 export const parseAgentOutput = (value: Message[]) => {
-	const output = value[0];
+    const output = value[0];
 
-	if (output.type !== "text") {
-		return "Here you go";
-	}
+    if (output.type !== "text") {
+        return "Here you go";
+    }
 
-	if (Array.isArray(output.content)) {
-		return output.content.map((txt) => txt).join("");
-	} else {
-		return output.content;
-	}
+    if (Array.isArray(output.content)) {
+        return output.content.map((txt) => txt).join("");
+    } else {
+        return output.content;
+    }
 };

@@ -17,7 +17,7 @@ import {
 } from "./utils";
 import { prisma } from "@/lib/database";
 import { MessageRole, MessageType } from "@/generated/prisma/enums";
-import { FRAGMENT_TITLE_PROMPT, OPENAI_MODEL_CONFIG, PROMPT, RESPONSE_PROMPT } from "@/constants";
+import { FRAGMENT_TITLE_PROMPT, OPENAI_MODEL_CONFIG, PROMPT, RESPONSE_PROMPT, SANDBOX_TIMEOUT } from "@/constants";
 
 
 type AgentState ={
@@ -32,9 +32,11 @@ export const codeAgentFunction = inngest.createFunction(
     // Create a sandbox id
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("vibe-nextjs-try-3");
+      await sandbox.setTimeout(SANDBOX_TIMEOUT) // sandbox alive for 15 mins
       return sandbox.sandboxId;
     });
 
+    // Get the previous messages
 		const previousMessages = await step.run(
 			"get-previous-messages",
 			async () => {
@@ -55,10 +57,11 @@ export const codeAgentFunction = inngest.createFunction(
 						content: message.content,
 					});
 				}
-				return formattedMessages;
+				return formattedMessages.reverse();
 			} 
 		);
 
+    // Create agent state
 		const state = createState<AgentState>(
 			{
 				summary: "",
@@ -69,7 +72,6 @@ export const codeAgentFunction = inngest.createFunction(
 			}
 		);
   
-
     // Create an agent with different tools
     const codeAgent = createAgent<AgentState>({
       name: "code-agent",
@@ -207,6 +209,7 @@ export const codeAgentFunction = inngest.createFunction(
 				network.state.data.summary ? undefined : codeAgent,
 		});
 
+    // Run the network
     const result = await network.run(event.data.value, { state });
     const files = result.state.data.files;
 
@@ -216,7 +219,6 @@ export const codeAgentFunction = inngest.createFunction(
 			system: FRAGMENT_TITLE_PROMPT,
 			model: OPENAI_MODEL_CONFIG.model,
 		});
-
     
     // Response generate
 		const responseGenerator = createAgent<AgentState>({
@@ -225,12 +227,12 @@ export const codeAgentFunction = inngest.createFunction(
 			model: OPENAI_MODEL_CONFIG.model
 		});
 
+    // Run the agents
 		const { output: responseTitle } = await fragmentTitleGenerator.run(result.state.data.summary);
 		const { output: responseSummary } = await responseGenerator.run(result.state.data.summary);
 
     const title = parseAgentOutput(responseTitle)
     const summary = parseAgentOutput(responseSummary)
-
 
     const isError = !summary || Object.keys(files || {}).length == 0; 
 

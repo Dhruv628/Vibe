@@ -31,10 +31,9 @@ export const ProjectsList = () =>{
                     <Button
                         key={project.id}
                         variant="outline"
-                        className="font-normal h-auto justify-start w-full text-start p-4"
-
+                        className="font-normal h-auto w-full"
                     >
-                        <Link href={`/projects/${project.id}`}>
+                        <Link className="font-normal h-auto justify-start w-full text-start p-4" href={`/projects/${project.id}`}>
                             <div className="flex items-center gap-x-4">
                                 <Image
                                     src="./logo.svg"

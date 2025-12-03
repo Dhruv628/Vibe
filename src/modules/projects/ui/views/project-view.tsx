@@ -13,6 +13,8 @@ import ProjectHeader from "./components/project-header";
 import { FragmentWeb } from "./components/fragment-web";
 import UserControl from "@/components/user-control";
 import { useAuth } from "@clerk/nextjs";
+import { QueryErrorBoundary } from "@/components/error-boundary";
+import { ProjectHeaderLoader, MessagesLoader } from "@/components/loaders";
 
 type Props = {
     projectId : string,
@@ -29,12 +31,16 @@ export const ProjectView = ( { projectId } : Props ) => {
         <div className="h-screen">
             <ResizablePanelGroup direction="horizontal">
                 <ResizablePanel defaultSize={35} minSize={20} className="flex flex-col min-h-0">
-                    <Suspense fallback={<div>Loading project...</div>}>
-                        <ProjectHeader projectId={projectId} />
-                    </Suspense>
-                    <Suspense fallback={<div>Loading messages...</div>}>
-                        <MessagesContainer projectId={projectId} activeFragment={activeFragment} setActiveFragment={setActiveFragment} />
-                    </Suspense>
+                    <QueryErrorBoundary>
+                        <Suspense fallback={<ProjectHeaderLoader />}>
+                            <ProjectHeader projectId={projectId} />
+                        </Suspense>
+                    </QueryErrorBoundary>
+                    <QueryErrorBoundary>
+                        <Suspense fallback={<MessagesLoader/>}>
+                            <MessagesContainer projectId={projectId} activeFragment={activeFragment} setActiveFragment={setActiveFragment} />
+                        </Suspense>
+                    </QueryErrorBoundary>
                 </ResizablePanel>
                 <ResizableHandle className="hover:bg-primary transition-colors"/>
                 <ResizablePanel defaultSize={65} minSize={50}>
