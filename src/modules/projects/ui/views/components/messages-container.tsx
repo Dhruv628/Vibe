@@ -3,8 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { MessageCard } from "./message-card";
 import { MessageForm } from "./message-form";
 import { useEffect, useRef } from "react";
-import { MessageRole } from "@/generated/prisma/enums";
-import { Fragment } from "@/generated/prisma/client";
+import { MessageRole, Fragment } from "@prisma/client";
 import { MessageLoading } from "./message-loading";
 
 type Props = {

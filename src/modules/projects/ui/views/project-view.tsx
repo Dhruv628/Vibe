@@ -3,7 +3,7 @@
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { MessagesContainer } from "./components/messages-container";
 import { Suspense, useState } from "react";
-import { Fragment } from "@/generated/prisma/client";
+import { Fragment } from "@prisma/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CodeIcon, CrownIcon, EyeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";

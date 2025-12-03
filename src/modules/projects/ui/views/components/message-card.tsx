@@ -1,5 +1,4 @@
-import { Fragment } from "@/generated/prisma/client"
-import { MessageRole, MessageType } from "@/generated/prisma/enums"
+import { Fragment, MessageRole, MessageType } from "@prisma/client"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"

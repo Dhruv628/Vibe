@@ -3,7 +3,7 @@ import { inngest } from "@/inngest/client";
 import { prisma } from "@/lib/database";
 import { protectedProcedure, createTRPCRouter } from "@/trpc/init";
 import z from "zod";
-import { MessageRole, MessageType } from "@/generated/prisma/browser";
+import { MessageRole, MessageType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { consumeCredits } from "@/lib/usage";
 

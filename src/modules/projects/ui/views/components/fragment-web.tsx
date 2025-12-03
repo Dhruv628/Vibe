@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ExternalLinkIcon, RefreshCcwIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Hint } from "@/components/hint";
-import { Fragment } from "@/generated/prisma/client";
+import { Fragment } from "@prisma/client";
 
 interface Props {
     fragment: Fragment;

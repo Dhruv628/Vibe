@@ -16,7 +16,7 @@ import {
   parseAgentOutput,
 } from "./utils";
 import { prisma } from "@/lib/database";
-import { MessageRole, MessageType } from "@/generated/prisma/enums";
+import { MessageRole, MessageType } from "@prisma/client";
 import { FRAGMENT_TITLE_PROMPT, RESPONSE_PROMPT, SANDBOX_TIMEOUT } from "@/constants";
 import { OPENAI_MODEL_CONFIG, PROMPT } from "@/constants/server";
 

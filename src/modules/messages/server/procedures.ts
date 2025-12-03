@@ -1,4 +1,4 @@
-import { MessageRole, MessageType } from "@/generated/prisma/enums";
+import { MessageRole, MessageType } from "@prisma/client";
 import { inngest } from "@/inngest/client";
 import { prisma } from "@/lib/database";
 import { consumeCredits } from "@/lib/usage";
