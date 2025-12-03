@@ -68,7 +68,7 @@
 }
 
 .dark {
-  --background: oklch(0.2166 0.0215 292.8474);
+  --background: oklch(0.2166 0.0215 292.8474 / 0.8);
   --foreground: oklch(0.9053 0.0245 293.557);
   --card: oklch(0.2544 0.0301 292.7315);
   --card-foreground: oklch(0.9053 0.0245 293.557);
@@ -92,7 +92,7 @@
   --chart-3: oklch(0.7321 0.0749 169.867);
   --chart-4: oklch(0.854 0.0882 76.8292);
   --chart-5: oklch(0.7857 0.0645 258.0839);
-  --sidebar: oklch(0.1985 0.02 293.6639);
+  --sidebar: oklch(0.1985 0.02 293.6639 / 0.5);
   --sidebar-foreground: oklch(0.9053 0.0245 293.557);
   --sidebar-primary: oklch(0.7058 0.0777 302.0489);
   --sidebar-primary-foreground: oklch(0.2166 0.0215 292.8474);
@@ -185,6 +185,11 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 @layer base {

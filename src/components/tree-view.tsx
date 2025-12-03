@@ -27,7 +27,7 @@ interface TreeViewProps {
 export const TreeView = ({ data, value, onSelect }: TreeViewProps) => {
 	return (
 		<SidebarProvider>
-			<Sidebar collapsible="none" className="w-full">
+			<Sidebar collapsible="none" className="w-full bg-transparent">
 				<SidebarContent>
 					<SidebarGroup>
 						<SidebarGroupContent>
