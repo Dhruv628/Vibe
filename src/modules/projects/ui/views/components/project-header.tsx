@@ -86,7 +86,7 @@ const ProjectHeader = ( {projectId} : Props ) => {
       </DropdownMenu>
       <div className="md:hidden flex items-center gap-2">
           <UserControl />
-          {hasProAccess &&  
+          {!hasProAccess &&  
             <Button asChild size="sm" variant="tertiary" className="text-xs sm:text-sm h-8.5">
                 <Link href="/pricing">
                     <CrownIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4"/> <span className="hidden sm:inline">Upgrade</span>
