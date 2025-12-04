@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, CopyCheckIcon, CopyIcon, PanelLeft, PanelLeftClose } from "lucide-react";
+import { ChevronLeft, ChevronRight, CopyCheckIcon, CopyIcon } from "lucide-react";
 import { useState, useMemo, Fragment, useCallback, useRef } from "react";
 import { Hint } from "@/components/hint";
 import { Button }  from "@/components/ui/button";
