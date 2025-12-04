@@ -29,7 +29,7 @@ export const TreeView = ({ data, value, onSelect }: TreeViewProps) => {
 		<SidebarProvider>
 			<Sidebar collapsible="none" className="w-full bg-transparent">
 				<SidebarContent>
-					<SidebarGroup>
+					<SidebarGroup className="px-0 md:px-2">
 						<SidebarGroupContent>
 							<SidebarMenu>
 								{data.map((item, index) => (
@@ -85,7 +85,7 @@ const Tree = ({ item, selectedValue, onSelect, parentPath }: TreeProps) => {
 				className="group/collapsible [&[data-state=open]>button>svg:first-child]:rotate-90"
 				defaultOpen
 			>
-				<CollapsibleTrigger asChild>
+				<CollapsibleTrigger asChild className="pl-0.5 md:px-2">
 					<SidebarMenuButton>
 						<ChevronRightIcon className="transition-transform" />
 						<FolderIcon />
@@ -93,7 +93,7 @@ const Tree = ({ item, selectedValue, onSelect, parentPath }: TreeProps) => {
 					</SidebarMenuButton>
 				</CollapsibleTrigger>
 				<CollapsibleContent>
-					<SidebarMenuSub>
+					<SidebarMenuSub className="mx-1 md:mx-3.5">
 						{items.map((subItem, index) => (
 							<Tree
 								key={index}

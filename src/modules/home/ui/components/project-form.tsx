@@ -9,12 +9,14 @@ import{ useQueryClient, useMutation } from "@tanstack/react-query"
 import {cn} from "@/lib/utils"
 import { useTRPC } from "@/trpc/client"
 import {Button } from "@/components/ui/button"
+import {CustomButton } from "@/components/ui/custom-button"
 import {Form , FormField} from "@/components/ui/form"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { PROJECT_TEMPLATES } from "@/constants"
 import { useClerk } from "@clerk/nextjs"
+import { useIsMobile } from "@/hooks/use-media-query"
 
 const formSchema = z.object({
     value: z.string()
@@ -28,6 +30,7 @@ export const ProjectForm = () =>{
     const [isFocused, setIsFocused] = useState(false);
     const trpc = useTRPC();
     const clerk = useClerk();
+    const isMobile = useIsMobile();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -108,36 +111,35 @@ export const ProjectForm = () =>{
                 )}
             />
             <div className="flex gap-x-2 items-end justify-between pt-2">
-                <div className="text-[10px] text-muted-foreground font-mono">
+                <div className="text-[10px] text-muted-foreground font-mono hidden sm:block">
                     <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
                         <span>&#8984;</span>Enter
                     </kbd>
                     &nbsp;to submit
                 </div>
-                <Button 
-                disabled={isButtonDisabled}
-                    className={cn(
-                        'size-8 rounded-full',
-                        isButtonDisabled && "bg-muted-foreground border"
-
+                <CustomButton 
+                    disabled={isButtonDisabled}
+                    size="icon"
+                    onClick={form.handleSubmit(onSubmit)}
+                >
+                    {isPending ? (
+                        <Loader2Icon className="size-4 animate-spin" />
+                    ) : ( 
+                        <ArrowUpIcon className="size-4" />
                     )}
-                >   {isPending ? (
-                    <Loader2Icon className="size-4 animate-spin" />
-                ) : ( <ArrowUpIcon />)}
-                   
-                </Button>
+                </CustomButton>
             </div>
             </form>
-            <div className="flex-wrap justify-center gap-2 hidden  md:flex max-w-3xl ">
+            <div className="md:justify-center flex-wrap gap-1 md:gap-2 flex max-w-2xl mx-auto md:px-4 sm:px-0 sm:max-w-3xl">
                 {PROJECT_TEMPLATES.map((template)=>(
                     <Button 
                         key={template.title}
                         variant="outline"
                         size="sm"
-                        className="bg-white dark:bg-sidebar "
+                        className="bg-white dark:bg-sidebar text-lg sm:text-sm"
                         onClick={()=>onSelect(template.prompt)}
                     >
-                        {template.emoji} {template.title}
+                        {template.emoji} {!isMobile && template.title}
                     </Button>
 
                 ))}

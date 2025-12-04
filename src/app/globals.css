@@ -185,11 +185,31 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Prevent font size adjustment on mobile */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+  }
+
+  /* Improve touch targets on mobile */
+  @media (max-width: 639px) {
+    button:not([disabled]),
+    [role="button"]:not([disabled]),
+    a[role="button"] {
+      min-height: 44px;
+    }
+  }
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @layer base {

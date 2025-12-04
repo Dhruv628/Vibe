@@ -2,10 +2,10 @@
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { MessagesContainer } from "./components/messages-container";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { Fragment } from "@prisma/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CodeIcon, CrownIcon, EyeIcon } from "lucide-react";
+import { CodeIcon, CrownIcon, EyeIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FileExplorer } from "@/components/file-explorer";
@@ -15,6 +15,9 @@ import UserControl from "@/components/user-control";
 import { useAuth } from "@clerk/nextjs";
 import { QueryErrorBoundary } from "@/components/error-boundary";
 import { ProjectHeaderLoader, MessagesLoader } from "@/components/loaders";
+import { useIsMobile } from "@/hooks/use-media-query";
+import { MessageForm } from "./components/message-form";
+import { CustomButton } from "@/components/ui/custom-button";
 
 type Props = {
     projectId : string,
@@ -23,19 +26,34 @@ type Props = {
 export const ProjectView = ( { projectId } : Props ) => {
    const [activeFragment, setActiveFragment] = useState<Fragment | null>(null)
    const [tabState, setTabState] = useState<"preview" | "code">("preview")
+   const [isFormMinimized, setIsFormMinimized] = useState(false);
+   const isMobile = useIsMobile();
+   const [isMounted, setIsMounted] = useState(false);
+
+   useEffect(() => {
+     setIsMounted(true);
+   }, []);
 
    const  { has } = useAuth();
    const hasProAccess = has?.({ plan: "pro" });
 
+    if (!isMounted) return null;
+
     return (
         <div className="h-screen relative">
+            {/* Gradient bg */}
             <div className="fixed inset-0 -z-10 h-full w-full">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:bg-gradient-to-br dark:from-[#1a1625] dark:via-[#2d1b3d] dark:to-[#1a1625]" />
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-blue-200/20 via-transparent to-transparent dark:from-purple-500/10" />
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-purple-200/20 via-transparent to-transparent dark:from-pink-500/10" />
+                <div className="absolute inset-0 bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 dark:bg-linear-to-br dark:from-[#1a1625] dark:via-[#2d1b3d] dark:to-[#1a1625]" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,var(--tw-gradient-stops))] from-blue-200/20 via-transparent to-transparent dark:from-purple-500/10" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,var(--tw-gradient-stops))] from-purple-200/20 via-transparent to-transparent dark:from-pink-500/10" />
             </div>
-            <ResizablePanelGroup direction="horizontal">
-                <ResizablePanel defaultSize={35} minSize={20} className="flex flex-col min-h-0">
+            <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"}>
+                <ResizablePanel 
+                    defaultSize={isMobile ? 45 : 35} 
+                    minSize={isMobile ? 1 : 20}
+                    maxSize={isMobile ? 90 : undefined}
+                    className="flex flex-col min-h-0"
+                >
                     <QueryErrorBoundary variant="minimal">
                         <Suspense fallback={<ProjectHeaderLoader />}>
                             <ProjectHeader projectId={projectId} />
@@ -43,36 +61,47 @@ export const ProjectView = ( { projectId } : Props ) => {
                     </QueryErrorBoundary>
                     <QueryErrorBoundary>
                         <Suspense fallback={<MessagesLoader/>}>
-                            <MessagesContainer projectId={projectId} activeFragment={activeFragment} setActiveFragment={setActiveFragment} />
+                            <MessagesContainer 
+                                projectId={projectId} 
+                                activeFragment={activeFragment} 
+                                setActiveFragment={setActiveFragment}
+                                showMessageForm={!isMobile}
+                            />
                         </Suspense>
                     </QueryErrorBoundary>
                 </ResizablePanel>
-                <ResizableHandle className="hover:bg-primary transition-colors"/>
-                <ResizablePanel defaultSize={65} minSize={50}>
+                <ResizableHandle withHandle={isMobile} className="hover:bg-primary transition-colors"/>
+                <ResizablePanel 
+                    defaultSize={isMobile ? 50 : 65} 
+                    minSize={isMobile ? 1 : 50}
+                    maxSize={isMobile ? 90 : undefined}
+                >
                     <Tabs
                       className="h-full gap-y-0"
                       defaultValue="preview"
                       value={tabState}
                       onValueChange={(value) => setTabState(value as "preview" | "code") }
                     >
-                        <div className="w-full flex items-center  p-2 border-b gap-x-2">
+                        <div className="w-full flex items-center p-2 border-b gap-x-2 flex-wrap sm:flex-nowrap">
                             <TabsList className="h-8 p-0 border rounded-md">
-                                <TabsTrigger value="preview" className="rounded-md">
-                                    <EyeIcon/> <span>Demo</span>
+                                <TabsTrigger value="preview" className="rounded-md min-h-0 text-xs sm:text-sm">
+                                    <EyeIcon className="size-4"/> <span className="hidden sm:inline">Demo</span>
                                 </TabsTrigger>
-                                <TabsTrigger value="code" className="rounded-md">
-                                    <CodeIcon/> <span>Code</span>
+                                <TabsTrigger value="code" className="rounded-md min-h-0 text-xs sm:text-sm">
+                                    <CodeIcon className="size-4"/> <span className="hidden sm:inline">Code</span>
                                 </TabsTrigger>
                             </TabsList>
                             <div className="ml-auto flex items-center gap-x-2">
                                 {!hasProAccess &&  
-                                    <Button asChild size="sm" variant="tertiary">
+                                    <Button asChild size="sm" variant="tertiary" className="text-xs hidden md:block sm:text-sm h-8">
                                         <Link href="/pricing">
-                                            <CrownIcon/> Upgrade
+                                            <CrownIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4"/> <span className="hidden sm:inline">Upgrade</span>
                                         </Link>
                                     </Button>
                                 } 
-                                <UserControl />
+                                <div className="hidden md:block">
+                                   <UserControl />
+                                </div>
                             </div>
                         </div>
                         <TabsContent value="code" className="min-h-0">
@@ -84,6 +113,34 @@ export const ProjectView = ( { projectId } : Props ) => {
                     </Tabs>
                 </ResizablePanel>
             </ResizablePanelGroup>
+            {/* Fixed message form for mobile */}
+            {isMobile && (
+                <>
+                    {/* Minimize/Maximize Button - Always visible */}
+                    <CustomButton
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsFormMinimized(!isFormMinimized);
+                        }}
+                        className="fixed right-4 bottom-5 z-9999 shadow-lg"
+                        size="icon"
+                    >
+                        {isFormMinimized ? (
+                            <PlusIcon className="size-4" />
+                        ) : (
+                            <MinusIcon className="size-4" />
+                        )}
+                    </CustomButton>
+                    {/* Message Form Container */}
+                    <div className={`fixed w-full left-0 z-40 bg-background border-t safe-bottom transition-all duration-300 ease-in-out ${
+                        isFormMinimized ? '-bottom-full' : 'bottom-0'
+                    }`}>
+                        <div className="p-2 sm:p-3 md:pr-16">
+                            <MessageForm projectId={projectId} />
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     )
 

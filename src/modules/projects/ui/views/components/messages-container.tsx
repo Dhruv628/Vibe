@@ -10,9 +10,10 @@ type Props = {
     projectId : string,
     activeFragment : Fragment | null,
     setActiveFragment : ( fragment : Fragment | null ) => void,
+    showMessageForm?: boolean,
 }
 
-export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment } : Props) => {
+export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment, showMessageForm = true } : Props) => {
     const bottomRef = useRef<HTMLDivElement>(null);
     const lastAssistantMessageIdRef = useRef<string | null>(null);
     const trpc = useTRPC();
@@ -40,7 +41,7 @@ export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment
     return (
         <div className="flex flex-col flex-1 min-h-0">
             <div className="flex-1 min-h-0 overflow-y-auto">
-                <div className="pt-2 pr-1">
+                <div className="pt-2 pr-2 sm:pr-1 px-3 sm:px-0">
                     {
                         messages.map( ( message ) => {
                             return (
@@ -63,10 +64,12 @@ export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment
                 }
                 <div ref={bottomRef} />
             </div>
-            <div className="relative p-3 pt-1">
-                <div className="absolute -top-6 left-0 right-0 h-6 bg-linear-to-b from-transparent-to-background/70 pointer-events-none" />
-                <MessageForm projectId={projectId} />
-            </div>
+            {showMessageForm && (
+                <div className="relative p-3 pt-1">
+                    <div className="absolute -top-6 left-0 right-0 h-6 bg-linear-to-b from-transparent-to-background/70 pointer-events-none" />
+                    <MessageForm projectId={projectId} />
+                </div>
+            )}
         </div>
     )
 }

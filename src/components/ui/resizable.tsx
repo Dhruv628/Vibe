@@ -31,6 +31,7 @@ function ResizablePanel({
 function ResizableHandle({
   withHandle,
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof ResizablePrimitive.PanelResizeHandle> & {
   withHandle?: boolean
@@ -49,8 +50,10 @@ function ResizableHandle({
           <GripVerticalIcon className="size-2.5" />
         </div>
       )}
+      {children}
     </ResizablePrimitive.PanelResizeHandle>
   )
 }
 
 export { ResizablePanelGroup, ResizablePanel, ResizableHandle }
+export type { ImperativePanelHandle } from "react-resizable-panels"

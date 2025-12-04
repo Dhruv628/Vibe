@@ -1,12 +1,13 @@
-import { CopyCheckIcon, CopyIcon } from "lucide-react";
-import { useState, useMemo, Fragment, useCallback } from "react";
+import { ChevronLeft, ChevronRight, CopyCheckIcon, CopyIcon, PanelLeft, PanelLeftClose } from "lucide-react";
+import { useState, useMemo, Fragment, useCallback, useRef } from "react";
 import { Hint } from "@/components/hint";
 import { Button }  from "@/components/ui/button";
 import { CodeView } from "@/components/code-view";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup, ImperativePanelHandle } from "@/components/ui/resizable"
 import { Breadcrumb, BreadcrumbEllipsis, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { convertFilesToTreeItems } from "@/lib/utils";
 import { TreeView } from "./tree-view";
+import { useIsMobile } from "@/hooks/use-media-query";
 
 
 type FileBreadCrumbProps = {
@@ -84,6 +85,21 @@ export const FileExplorer = ({ files }: FileExplorerProps) => {
       const fileKeys = Object.keys(files);
       return fileKeys.length > 0 ? fileKeys[0] : null;
   });
+  const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
+  const panelRef = useRef<ImperativePanelHandle>(null);
+
+  const isMobile = useIsMobile();
+
+  const togglePanel = () => {
+    if (panelRef.current) {
+      if (isPanelCollapsed) {
+        panelRef.current.expand();
+      } else {
+        panelRef.current.collapse();
+      }
+      setIsPanelCollapsed(!isPanelCollapsed);
+    }
+  };
 
   const handleCopy = async () => {
     if(selectedFile && files[selectedFile]){
@@ -104,17 +120,28 @@ export const FileExplorer = ({ files }: FileExplorerProps) => {
   }, [files])
   return (
     <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={30} minSize={30} className="bg-sidebar">
+        <ResizablePanel ref={panelRef} collapsible={isMobile} defaultSize={ isMobile ? 50 : 30 } minSize={ isMobile ? 30 : 30 } maxSize={isMobile ? 50 : undefined} className="bg-sidebar">
             <TreeView data={treeData} value={selectedFile} onSelect={handleFileSelect} />
         </ResizablePanel>
-        <ResizableHandle className="hover:bg-primary transition-colors" />
+        <ResizableHandle withHandle={isMobile} className="hover:bg-primary transition-colors relative">
+            {isMobile && (
+                <Hint text={isPanelCollapsed ? "Show files" : "Hide files"} side="right">
+                    <div 
+                        onClick={togglePanel}
+                        className="absolute bg-primary/75 text-primary-foreground flex items-center justify-center left-0  -translate-y-6 z-50 shadow-xl h-6.5 w-7 rounded-r-full"
+                    >
+                        {isPanelCollapsed ? <ChevronRight className="size-4.5" /> : <ChevronLeft className="size-4.5" />}
+                    </div>
+                </Hint>
+            )}
+        </ResizableHandle>
         <ResizablePanel defaultSize={70} minSize={50}>
             {selectedFile && files[selectedFile] ? (
                 <div className="h-full w-full flex flex-col">
                     <div className="border-b bg-sidebar px-4 py-2 flex justify-between items-center gap-x-2">
                         <FileBreadCrumb filePath={selectedFile} />
                         <Hint text="Copy to clipboard" side="bottom">
-                            <Button variant="outline" size="icon" className="ml-auto" onClick={handleCopy} disabled={copied}>
+                            <Button variant="outline" size="icon" className="ml-auto min-h-0" onClick={handleCopy} disabled={copied}>
                                 {
                                     copied ? <CopyCheckIcon className="size-4" /> : <CopyIcon className="size-4" />
                                 }

@@ -26,11 +26,11 @@ export const FragmentWeb = ({ fragment }: Props) => {
 
     return (
         <div className="flex flex-col w-full h-full">
-            <div className="p-2 border-b bg-sidebar flex items-center gap-x-2">
+            <div className="p-2 border-b bg-sidebar flex items-center gap-x-1 sm:gap-x-2">
 
                 <Hint text="Refresh" side="bottom" align="start">
-                    <Button size="sm" variant="outline" onClick={onRefresh}>
-                        <RefreshCcwIcon />
+                    <Button size="sm" variant="outline" onClick={onRefresh} className="h-8 px-2 sm:px-3">
+                        <RefreshCcwIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4"/>
                     </Button>
                 </Hint>
                 <Hint text="Click to copy" side="bottom">
@@ -39,9 +39,9 @@ export const FragmentWeb = ({ fragment }: Props) => {
                         variant="outline" 
                         onClick={handleCopy}
                         disabled={!fragment.sandboxUrl || copied} 
-                        className="flex-1 justify-start text-start font-normal"
+                        className="flex-1 justify-start text-start font-normal h-8 min-w-0 px-2 sm:px-3"
                     >
-                        <span className="truncate">
+                        <span className="truncate text-xs sm:text-sm">
                             {fragment.sandboxUrl}
                         </span>
                     </Button>
@@ -51,12 +51,13 @@ export const FragmentWeb = ({ fragment }: Props) => {
                         size="sm"
                         disabled={!fragment.sandboxUrl}
                         variant="outline"
+                        className="h-8 px-2 sm:px-3"
                         onClick={() => {
                             if (!fragment.sandboxUrl) return;
                             window.open(fragment.sandboxUrl, "_blank");
                         }}
                     >
-                        <ExternalLinkIcon />
+                        <ExternalLinkIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4"/>
                     </Button>
                 </Hint>
             </div>

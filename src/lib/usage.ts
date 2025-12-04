@@ -9,7 +9,7 @@ const FREE_POINTS = 2;
 /**
  * Number of pro credits/points available to users.
  */
-const PRO_POINTS = 3;
+const PRO_POINTS = 100;
 
 /**
  * Duration for rate limiting in seconds (30 days).
