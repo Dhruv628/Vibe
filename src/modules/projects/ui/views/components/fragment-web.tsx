@@ -26,10 +26,9 @@ export const FragmentWeb = ({ fragment }: Props) => {
 
     return (
         <div className="flex flex-col w-full h-full">
-            <div className="p-2 border-b bg-sidebar flex items-center gap-x-1 sm:gap-x-2">
-
+            <div className="pb-2 px-2 md:p-2 border-b bg-sidebar flex items-center gap-x-1 sm:gap-x-2">
                 <Hint text="Refresh" side="bottom" align="start">
-                    <Button size="sm" variant="outline" onClick={onRefresh} className="h-8 px-2 sm:px-3">
+                    <Button size="sm" variant="outline" onClick={onRefresh} className="h-8 min-h-0 px-2 sm:px-3">
                         <RefreshCcwIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4"/>
                     </Button>
                 </Hint>
@@ -39,7 +38,7 @@ export const FragmentWeb = ({ fragment }: Props) => {
                         variant="outline" 
                         onClick={handleCopy}
                         disabled={!fragment.sandboxUrl || copied} 
-                        className="flex-1 justify-start text-start font-normal h-8 min-w-0 px-2 sm:px-3"
+                        className="flex-1 min-h-0 justify-start text-start font-normal h-8 min-w-0 px-2 sm:px-3"
                     >
                         <span className="truncate text-xs sm:text-sm">
                             {fragment.sandboxUrl}
@@ -51,7 +50,7 @@ export const FragmentWeb = ({ fragment }: Props) => {
                         size="sm"
                         disabled={!fragment.sandboxUrl}
                         variant="outline"
-                        className="h-8 px-2 sm:px-3"
+                        className="h-8 min-h-0 px-2 sm:px-3"
                         onClick={() => {
                             if (!fragment.sandboxUrl) return;
                             window.open(fragment.sandboxUrl, "_blank");
