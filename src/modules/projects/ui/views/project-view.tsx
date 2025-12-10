@@ -42,11 +42,11 @@ export const ProjectView = ( { projectId } : Props ) => {
     return (
         <div className="h-screen relative">
             {/* Gradient bg */}
-            <div className="fixed inset-0 -z-10 h-full w-full">
+            {/* <div className="fixed inset-0 -z-10 h-full w-full">
                 <div className="absolute inset-0 bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 dark:bg-linear-to-br dark:from-[#1a1625] dark:via-[#2d1b3d] dark:to-[#1a1625]" />
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,var(--tw-gradient-stops))] from-blue-200/20 via-transparent to-transparent dark:from-purple-500/10" />
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,var(--tw-gradient-stops))] from-purple-200/20 via-transparent to-transparent dark:from-pink-500/10" />
-            </div>
+            </div> */}
             <ResizablePanelGroup className="flex flex-col md:flex-row" direction={isMobile ? "vertical" : "horizontal"}>
                 {isMobile ? (
                     <>

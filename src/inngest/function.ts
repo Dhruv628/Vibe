@@ -18,7 +18,7 @@ import {
 import { prisma } from "@/lib/database";
 import { MessageRole, MessageType } from "@prisma/client";
 import { FRAGMENT_TITLE_PROMPT, RESPONSE_PROMPT, SANDBOX_TIMEOUT } from "@/constants";
-import { OPENAI_MODEL_CONFIG, PROMPT } from "@/constants/server";
+import { OPENAI_CODE_MODEL_CONFIG, OPENAI_TEXT_MODEL_CONFIG , PROMPT } from "@/constants/server";
 
 
 type AgentState ={
@@ -78,7 +78,7 @@ export const codeAgentFunction = inngest.createFunction(
       name: "code-agent",
       description: "An expert coding agent",
       system: PROMPT,
-      model: OPENAI_MODEL_CONFIG.model,
+      model: OPENAI_CODE_MODEL_CONFIG.model,
       tools: [
         // terminal tool to run commands
         createTool({
@@ -218,14 +218,14 @@ export const codeAgentFunction = inngest.createFunction(
 		const fragmentTitleGenerator = createAgent<AgentState>({
 			name: "fragment-title",
 			system: FRAGMENT_TITLE_PROMPT,
-			model: OPENAI_MODEL_CONFIG.model,
+			model: OPENAI_TEXT_MODEL_CONFIG.model,
 		});
     
     // Response generate
 		const responseGenerator = createAgent<AgentState>({
 			name: "response-generator",
 			system: RESPONSE_PROMPT,
-			model: OPENAI_MODEL_CONFIG.model
+			model: OPENAI_TEXT_MODEL_CONFIG.model
 		});
 
     // Run the agents
